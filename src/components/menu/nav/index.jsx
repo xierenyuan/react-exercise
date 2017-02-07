@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, createClass} from 'react';
 import classNames from 'classnames';
 
 /**
@@ -25,16 +25,20 @@ class MenuGroup extends Component {
     }
 }
 
-/**
- *
- * item
- * @class Item
- * @extends {Component}
- */
-class Item extends Component {
-    constructor(props) {
-        super(props);
-    }
+const Item = createClass({
+    getInitialState() {
+        return {
+            complete: (!!this.props.complete) || false
+        };
+    },
+
+    handleChange(event) {
+        this.setState({complete: event.target.checked});
+        const onClick = this.props.onClick;
+        if (onClick) {
+            onClick(event);
+        }
+    },
 
     render() {
         const props = this.props;
@@ -50,7 +54,11 @@ class Item extends Component {
             <li>
                 <a className={classNames(className)}>
                     <div className="nav--menu-item__content">
-                        <input type="checkbox"/> {title}
+                        <input
+                            type="checkbox"
+                            checked={this.state.complete}
+                            rel="complete"
+                            onChange={this.handleChange}/> {title}
                     </div>
                     <span className="nav--menu-item__count">{count}</span>
                 </a>
@@ -58,7 +66,16 @@ class Item extends Component {
             </li>
         )
     }
-}
+});
+
+/**
+ *
+ * item
+ * @class Item
+ * @extends {Component}
+ */
+// class Item extends Component {     constructor(props) {         super(props);
+//         this.handleChange = this             .handleChange .bind(this); } }
 
 /**
  *
@@ -72,20 +89,49 @@ export default class Nav extends Component {
         super(props);
     }
 
+    onHander(row) {
+        console.log('child', row);
+
+    }
+
+    onParentHander(item) {
+        console.log(item);
+        item
+            .child
+            .map(row => {
+                row.value = !item.value;
+            });
+          //  this.setState({});
+    }
+
     render() {
         const props = this.props;
         const menus = props.menus;
         const childs = menus.map((row, index) => {
             return (
-                <Item key={index} title={row.title} count={row.count}>
-                       {row
+                <Item
+                    key={index}
+                    title={row.title}
+                    complete={row.value}
+                    count={row.count}
+                    onClick={this
+                    .onParentHander
+                    .bind(this, row)}>
+                    {row
                         .child
                         .map((rowChild, indexChild) => {
                             return <MenuGroup key={indexChild}>
-                                <Item isChild="true" title={rowChild.title} count={rowChild.count}></Item>
+                                <Item
+                                    isChild="true"
+                                    title={rowChild.title}
+                                    complete={rowChild.value}
+                                    onClick={this
+                                    .onHander
+                                    .bind(this, rowChild)}
+                                    count={rowChild.count}></Item>
                             </MenuGroup>
                         })
-                      }
+}
                 </Item>
             )
         });
