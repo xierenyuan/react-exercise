@@ -1,6 +1,7 @@
 import React, {Component, createClass} from 'react';
 import classNames from 'classnames';
-
+import Checkbox from 'rc-checkbox';
+import {fill, findIndex, extend} from 'lodash';
 /**
  *
  * MenuGroup
@@ -25,20 +26,10 @@ class MenuGroup extends Component {
     }
 }
 
-const Item = createClass({
-    getInitialState() {
-        return {
-            complete: (!!this.props.complete) || false
-        };
-    },
-
-    handleChange(event) {
-        this.setState({complete: event.target.checked});
-        const onClick = this.props.onClick;
-        if (onClick) {
-            onClick(event);
-        }
-    },
+class Item extends Component {
+    constructor(props) {
+        super(props);
+    }
 
     render() {
         const props = this.props;
@@ -49,16 +40,14 @@ const Item = createClass({
         };
         let title = props.title;
         let count = props.count;
-
+        let complete = props.complete;
         return (
             <li>
                 <a className={classNames(className)}>
                     <div className="nav--menu-item__content">
-                        <input
-                            type="checkbox"
-                            checked={this.state.complete}
-                            rel="complete"
-                            onChange={this.handleChange}/> {title}
+                        <label>
+                            <Checkbox onChange={props.onClick} checked={!!complete}/> {title}
+                        </label>
                     </div>
                     <span className="nav--menu-item__count">{count}</span>
                 </a>
@@ -66,16 +55,8 @@ const Item = createClass({
             </li>
         )
     }
-});
 
-/**
- *
- * item
- * @class Item
- * @extends {Component}
- */
-// class Item extends Component {     constructor(props) {         super(props);
-//         this.handleChange = this             .handleChange .bind(this); } }
+}
 
 /**
  *
@@ -87,26 +68,46 @@ const Item = createClass({
 export default class Nav extends Component {
     constructor(props) {
         super(props);
+        this.state = this.initialState();
+    }
+
+    initialState() {
+        return {menu: this.props.menus}
     }
 
     onHander(row) {
-        console.log('child', row);
+        let menus = this.state.menu;
+        let index = findIndex(menus, item => {
+            return item.title === row.title;
+        });
+
+        row.value = !row.value;
+        let nMenus = fill(menus, row, index, index + 1);
+
+        this.setState({menu: nMenus});
 
     }
 
     onParentHander(item) {
-        console.log(item);
-        item
-            .child
-            .map(row => {
+        let menus = this.state.menu;
+
+        menus.map(row => {
+            if (row.id === item.id) {
                 row.value = !item.value;
-            });
-          //  this.setState({});
+                row
+                    .child
+                    .map(childRow => {
+                        childRow.value = row.value;
+                    });
+            }
+        });
+
+        this.setState({menu: menus});
     }
 
     render() {
         const props = this.props;
-        const menus = props.menus;
+        const menus = this.state.menu;
         const childs = menus.map((row, index) => {
             return (
                 <Item
@@ -140,13 +141,30 @@ export default class Nav extends Component {
             <div className="nav--content">
                 <div className="nav--tool">
                     <h3>招聘职位</h3>
-                    <button>清空</button>
+                    <button
+                        onClick={this
+                        .onReset
+                        .bind(this)}>清空</button>
                 </div>
                 <MenuGroup isParent="true">
                     {childs}
                 </MenuGroup>
             </div>
         )
+    }
+
+    onReset() {
+        let menus = this.state.menu;
+        let nM = menus.map(item => {
+            item.child = item
+                .child
+                .map(row => {
+                    return extend(row, {value: false});
+                });
+            return extend(item, {value: false});
+        });
+
+        this.setState({menu: nM});
     }
 
 };

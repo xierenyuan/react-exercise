@@ -12,10 +12,10 @@ import Nav from './nav/index.jsx';
 export default class Menu extends Component {
     constructor() {
         super();
+        this.state = this.initialState();
     }
 
-    render() {
-
+    initialState(){
         const menuData = [
             {
                 title: '工程师研发部门',
@@ -80,10 +80,15 @@ export default class Menu extends Component {
                 ]
             }
         ];
+        return {
+            menus: menuData
+        }
+    }
 
+    render() {
         return (
             <div className="container">
-                <Nav menus={menuData}></Nav>
+                <Nav menus={this.state.menus}></Nav>
                 <div className="content"></div>
             </div>
         )
