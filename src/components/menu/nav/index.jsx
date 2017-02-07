@@ -68,11 +68,28 @@ class Item extends Component {
  * @extends {Component}
  */
 export default class Nav extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
     }
 
     render() {
+        const props = this.props;
+        const menus = props.menus;
+        const childs = menus.map((row, index) => {
+            return (
+                <Item key={index} title={row.title} count={row.count}>
+                       {row
+                        .child
+                        .map((rowChild, indexChild) => {
+                            return <MenuGroup key={indexChild}>
+                                <Item isChild="true" title={rowChild.title} count={rowChild.count}></Item>
+                            </MenuGroup>
+                        })
+                      }
+                </Item>
+            )
+        });
+
         return (
             <div className="nav--content">
                 <div className="nav--tool">
@@ -80,15 +97,10 @@ export default class Nav extends Component {
                     <button>清空</button>
                 </div>
                 <MenuGroup isParent="true">
-                    <Item title="工程师研发部门" count="120">
-                        <MenuGroup>
-                            <Item isChild="true" title="Mac 开发工程师" count="9"></Item>
-                            <Item isChild="true" title="Ios App 测试开发工程师" count="17"></Item>
-                        </MenuGroup>
-                    </Item>
-                    <Item title="产品设计部门" count="136"></Item>
+                    {childs}
                 </MenuGroup>
             </div>
         )
     }
+
 };
