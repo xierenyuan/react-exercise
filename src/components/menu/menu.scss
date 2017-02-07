@@ -1,0 +1,80 @@
+$navBg:#607d8b;
+.container {
+    display: flex;
+    .nav {
+        &--content {
+            width: 300px;
+            min-height: 400px;
+            background-color: $navBg;
+            color: #d4dbde;
+            padding: 15px;
+        }
+        //顶部样式
+        &--tool {
+            display: flex;
+            height: 50px;
+            h3 {
+                flex: 1;
+            }
+            button {
+                flex: 1;
+                display: inline-block;
+                line-height: 1;
+                white-space: nowrap;
+                cursor: pointer;
+                background: $navBg;
+                border: 0;
+                color: #fff;
+                -webkit-appearance: none;
+                text-align: right;
+                box-sizing: border-box;
+                outline: none;
+                margin: 0;
+                font-size: 14px;
+                font-weight: bold;
+            }
+        }
+        // 折叠菜单样式
+        &--menu {
+            padding: 0;
+            li {
+                list-style: none;
+                ul {
+                    padding-left: 20px;
+                }
+            }
+            &-item {
+                display: flex;
+                height: 35px;
+                line-height: 35px;
+                color: #fff;
+                &__content {
+                    flex: 1;
+                    input {
+                        margin-right: 10px;
+                    }
+                }
+                &__count {
+                    display: inline-block;
+                    text-align: center;
+                    background-color: #516a76;
+                    width: 40px;
+                    height: 30px;
+                    border-radius: 15px;
+                }
+            }
+        }
+    }
+    //其他样式 
+    .nav--menu-item-child {
+        &.nav--menu-item {
+            color: #d4dbde;
+        }
+        .nav--menu-item__count {
+            background-color: $navBg;
+        }
+    }
+    .content {
+        flex: 1;
+    }
+}
